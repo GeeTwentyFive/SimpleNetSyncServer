@@ -1,6 +1,10 @@
 General-purpose cross-platform networked state synchronization server
 
 
+# Usage
+`SimpleNetSyncServer [PORT] [MAX_CLIENT_COUNT]`
+
+
 # Protocol
 
 After first packet received, server sends:
