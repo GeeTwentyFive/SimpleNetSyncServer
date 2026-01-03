@@ -42,7 +42,7 @@ def receive_handler():
                 data, _ = s.recvfrom(65536)
                 if int.from_bytes(data[:8]) <= server_packet_seq_num: continue
                 server_packet_seq_num = int.from_bytes(data[:8])
-                client_states = json.loads(data[8:].decode())
+                client_states = json.loads(data[8:].decode("ascii"))
 
 local_client_state = 0
 local_packet_seq_num = -1
@@ -61,7 +61,7 @@ while True:
         s.sendto(
                 (
                         local_packet_seq_num.to_bytes(8) +
-                        str(local_client_state).encode()
+                        str(local_client_state).encode("ascii")
                 ),
                 ("::1", 55555)
         )

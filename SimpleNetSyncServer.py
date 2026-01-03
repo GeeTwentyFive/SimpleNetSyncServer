@@ -59,13 +59,13 @@ while keep_running:
         if data_packet_seq <= client_packet_seq_numbers[client_ids[addr]]:
                 continue
         client_packet_seq_numbers[client_ids[addr]] = data_packet_seq
-        client_states[client_ids[addr]] = data[8:].decode()
+        client_states[client_ids[addr]] = data[8:].decode("ascii")
         packet_seq_number += 1
         for client in clients:
                 s.sendto(
                         (
                                 packet_seq_number.to_bytes(8) +
-                                json.dumps(client_states).encode()
+                                json.dumps(client_states).encode("ascii")
                         ),
                         client
                 )
