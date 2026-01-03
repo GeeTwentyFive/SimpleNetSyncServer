@@ -2,6 +2,8 @@ General-purpose cross-platform networked state synchronization server
 
 Python client library: https://github.com/GeeTwentyFive/PySimpleNetSync
 
+GDScript client library: https://github.com/GeeTwentyFive/GodotSimpleNetSync
+
 
 # Usage
 `SimpleNetSyncServer [PORT]`
