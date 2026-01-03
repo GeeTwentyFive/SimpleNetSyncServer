@@ -1,7 +1,6 @@
 # Config
 
 DEFAULT_PORT = 55555
-DEFAULT_MAX_CLIENTS = 32
 
 
 
@@ -26,12 +25,6 @@ port = DEFAULT_PORT
 if len(sys.argv) >= 2:
         port = int(sys.argv[1])
 
-max_clients = DEFAULT_MAX_CLIENTS
-if len(sys.argv) >= 3:
-        max_clients = int(sys.argv[2])
-
-print(f"Port: {port}\nMax clients: {max_clients}")
-
 clients: list[(str, int)] = []
 client_ids: dict[(str, int), int] = {}
 client_packet_seq_numbers: dict[int, int] = {}
@@ -44,7 +37,7 @@ s.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
 s.bind(("::", port))
 keep_running = True
 signal.signal(signal.SIGINT, lambda: (keep_running := False))
-print("Server started")
+print(f"Server started on port {port}")
 while keep_running:
         data, addr = s.recvfrom(65536)
         if addr not in clients:
@@ -52,10 +45,10 @@ while keep_running:
                 client_ids[addr] = new_GUID()
                 client_packet_seq_numbers[client_ids[addr]] = -1
                 packet_seq_number += 1
-                s.sendto(client_ids[addr].to_bytes(8), addr)
+                s.sendto(client_ids[addr].to_bytes(8, "little"), addr)
                 print(f"Client {client_ids[addr]} connected")
                 continue
-        data_packet_seq = int.from_bytes(data[:8])
+        data_packet_seq = int.from_bytes(data[:8], "little")
         if data_packet_seq <= client_packet_seq_numbers[client_ids[addr]]:
                 continue
         client_packet_seq_numbers[client_ids[addr]] = data_packet_seq
@@ -64,7 +57,7 @@ while keep_running:
         for client in clients:
                 s.sendto(
                         (
-                                packet_seq_number.to_bytes(8) +
+                                packet_seq_number.to_bytes(8, "little") +
                                 json.dumps(client_states).encode("ascii")
                         ),
                         client

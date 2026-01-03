@@ -4,7 +4,7 @@ Python client library: https://github.com/GeeTwentyFive/PySimpleNetSync
 
 
 # Usage
-`SimpleNetSyncServer [PORT] [MAX_CLIENT_COUNT]`
+`SimpleNetSyncServer [PORT]`
 
 
 # Protocol
