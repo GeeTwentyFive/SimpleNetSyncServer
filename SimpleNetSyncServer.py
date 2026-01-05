@@ -51,20 +51,26 @@ while keep_running:
         # Handle non-existing-client packets
         if addr not in clients:
                 if addr not in unverified_clients:
-                        if int.from_bytes(data[:8], "little") != CONNECT_REQUEST_PACKET: continue
+                        if int.from_bytes(data[:8], "little", signed=True) != CONNECT_REQUEST_PACKET: continue
                         # New connection attempt
                         unverified_clients.append(addr)
                         client_ids[addr] = new_GUID()
-                        s.sendto(client_ids[addr].to_bytes(8, "little"), addr)
+                        s.sendto(
+                                (
+                                        (-1).to_bytes(8, "little", signed=True) +
+                                        client_ids[addr].to_bytes(8, "little", signed=True)
+                                ),
+                                addr
+                        )
                 else:
-                        if int.from_bytes(data[:8], "little") == CONNECT_REQUEST_PACKET: continue
+                        if int.from_bytes(data[:8], "little", signed=True) == CONNECT_REQUEST_PACKET: continue
                         # Connection verified, add as client
                         unverified_clients.remove(addr)
                         clients.append(addr)
                         client_last_packet_times[client_ids[addr]] = time.monotonic()
                         print(f"Client {client_ids[addr]} connected")
                         # (save received client state)
-                        client_packet_seq_numbers[client_ids[addr]] = int.from_bytes(data[:8], "little")
+                        client_packet_seq_numbers[client_ids[addr]] = int.from_bytes(data[:8], "little", signed=True)
                         client_states[client_ids[addr]] = data[8:].decode("ascii")
                 continue
 
@@ -80,7 +86,7 @@ while keep_running:
         client_last_packet_times[client_ids[addr]] = time.monotonic()
 
         # Save received client state
-        data_packet_seq = int.from_bytes(data[:8], "little")
+        data_packet_seq = int.from_bytes(data[:8], "little", signed=True)
         if data_packet_seq <= client_packet_seq_numbers[client_ids[addr]]:
                 continue
         client_packet_seq_numbers[client_ids[addr]] = data_packet_seq
@@ -91,7 +97,7 @@ while keep_running:
         for client in clients:
                 s.sendto(
                         (
-                                packet_seq_number.to_bytes(8, "little") +
+                                packet_seq_number.to_bytes(8, "little", signed=True) +
                                 json.dumps(client_states, separators=(',', ':')).encode("ascii")
                         ),
                         client
