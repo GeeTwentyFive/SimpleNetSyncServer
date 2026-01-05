@@ -61,13 +61,18 @@ local_packet_seq_num = -1
 local_client_id = -1
 
 # Keep sending ID request until you receive your ID
+s.setblocking(False)
 while True:
         s.sendto((-1).to_bytes(8, "little", signed=True), ("::1", 55555))
-        data, _ = s.recvfrom(65536)
+        try: data, _ = s.recvfrom(65536)
+        except BlockingIOError: # Nothing received:
+                sleep(0.2)
+                continue
         if int.from_bytes(data[:8], "little", signed=True) == -1:
                 local_client_id = int.from_bytes(data[8:], "little", signed=True)
                 break
-        sleep(0.5)
+        sleep(0.2)
+s.setblocking(True)
 
 threading.Thread(target=receive_handler).start()
 
