@@ -63,7 +63,7 @@ while keep_running:
                                 addr
                         )
                 else:
-                        if int.from_bytes(data[:8], "little", signed=True) == CONNECT_REQUEST_PACKET: continue
+                        if int.from_bytes(data[:8], "little", signed=True) < 0: continue
                         # Connection verified, add as client
                         unverified_clients.remove(addr)
                         clients.append(addr)
