@@ -92,13 +92,17 @@ while keep_running:
         client_packet_seq_numbers[client_ids[addr]] = data_packet_seq
         client_states[client_ids[addr]] = data[8:].decode("ascii")
 
+        client_states_json = json.dumps(client_states, separators=(',', ':')).encode("ascii")
+        if len(client_states_json) > 65535-8:
+                print("WARNING: client_states_json size exceeds UDP packet max")
+
         # Sync client states
         packet_seq_number += 1
         for client in clients:
                 s.sendto(
                         (
                                 packet_seq_number.to_bytes(8, "little", signed=True) +
-                                json.dumps(client_states, separators=(',', ':')).encode("ascii")
+                                client_states_json
                         ),
                         client
                 )
