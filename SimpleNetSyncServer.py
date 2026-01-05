@@ -58,7 +58,7 @@ while keep_running:
                 s.sendto(
                         (
                                 packet_seq_number.to_bytes(8, "little") +
-                                json.dumps(client_states).encode("ascii")
+                                json.dumps(client_states, separators=(',', ':')).encode("ascii")
                         ),
                         client
                 )
