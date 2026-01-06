@@ -9,6 +9,7 @@ TIMEOUT = 10.0
 # Implementation
 
 import sys
+import miniupnpc
 import socket
 import signal
 import time
@@ -29,6 +30,23 @@ def new_GUID() -> int:
 port = DEFAULT_PORT
 if len(sys.argv) >= 2:
         port = int(sys.argv[1])
+
+print(f"Attempting to forward UDP {port} via UPnP...")
+try:
+        upnp = miniupnpc.UPnP()
+        try: upnp.discover()
+        except: pass
+        upnp.selectigd()
+        upnp.addportmapping(
+                port,
+                "UDP",
+                upnp.lanaddr,
+                port,
+                "UPnP mapping",
+                ""
+        )
+except Exception as e:
+        print("UPnP ERROR: " + str(e))
 
 unverified_clients: list[(str, int)] = []
 clients: list[(str, int)] = []

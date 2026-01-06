@@ -6,6 +6,7 @@ GDScript client library: https://github.com/GeeTwentyFive/GodotSimpleNetSync
 
 
 # Usage
+
 `SimpleNetSyncServer [PORT]`
 
 
@@ -90,3 +91,8 @@ while True:
         )
         sleep(0.1)
 ```
+
+
+# Build dependencies
+
+`pip install miniupnpc`
